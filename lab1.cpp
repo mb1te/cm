@@ -24,7 +24,7 @@ long double my_exp(int x) {
     int k = 1;
     long double ans = 1, tmp = 1;
     while (tmp > 0){
-        tmp = tmp * x / k;
+        tmp = tmp / k * x;
         k++;
         ans += tmp;
     }
@@ -40,10 +40,11 @@ long double normalize(long double x) {
 
 // Функция вычисления синуса в ряд Маклорена
 long double my_sin(long double x) {
+    x = normalize(x);
     long double ans = x, tmp = x;
     int k = 2;
     while (abs(tmp) > 0) {
-        tmp = -tmp / (k * k + k) * x * x;
+        tmp = -1 * tmp * x / k * x / (k + 1);
         k += 2;
         ans += tmp;
     }
@@ -52,14 +53,20 @@ long double my_sin(long double x) {
 
 // Функция вычисления косинуса в ряд Маклорена
 long double my_cos(long double x) {
-    long double ans = x, tmp = 1;
+    x = normalize(x);
+    long double ans = 1, tmp = 1;
     int k = 1;
     while (abs(tmp) > 0) {
-        tmp = -1 * tmp * x * x / k / (k + 1);
+        tmp = -1 * tmp * x / k * x / (k + 1);
         k += 2;
         ans += tmp;
     }
     return ans;
+}
+
+long double get_integral(int k, double eps) {
+    if (k == 0) return exp(-1) + eps;
+    return 1 - k * get_integral(k - 1, eps);
 }
 
 int main() {
@@ -105,5 +112,16 @@ int main() {
         cout << sp(12) << "Погрешность при x = " << i << ": " << abs(my_cos(i) - cos(i)) << endl;
         cout << "-------------------------------------------\n";
     }
+    
+    cout << "ЗАДАНИЕ 3 \n";
+    for (int i = 1; i <= 20; i++) {
+        cout << sp(20) << "E_" << i << " при eps =    0: " << get_integral(i, 0) << endl; 
+        cout << sp(20) << "E_" << i << " при eps = 1e-7: " << get_integral(i, 1e-7) << endl; 
+        cout << sp(20) << "E_" << i << " при eps = 1e-6: " << get_integral(i, 1e-6) << endl; 
+        cout << sp(20) << "E_" << i << " при eps = 1e-5: " << get_integral(i, 0) << endl;
+        cout << "-------------------------------------------\n";  
+    }
+    
+    
     return 0;
 }
